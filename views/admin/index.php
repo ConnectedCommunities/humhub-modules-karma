@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Connected Communities Initiative
  * Copyright (C) 2016 Queensland University of Technology
@@ -16,22 +17,89 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+use yii\helpers\Url;
+use yii\helpers\Html;
+use yii\grid\GridView;
+
+use yii\data\ActiveDataProvider;
 ?>
+
 <div class="panel panel-default">
     <div class="panel-heading"><strong>Manage</strong> karma</div>
     <div class="panel-body">
         <ul class="nav nav-pills">
             <li class="active"><a
-                    href="<?php echo $this->createUrl('index'); ?>">Overview</a>
+                    href="<?php echo Url::toRoute('index'); ?>">Overview</a>
             </li>
             <li>
-                <a href="<?php echo $this->createUrl('add'); ?>">Add Karma Record</a>
+                <a href="<?php echo Url::toRoute('add'); ?>">Add Karma Record</a>
             </li>
         </ul>
         <p />
 
         <?php
-        $this->widget('zii.widgets.grid.CGridView', array(
+
+        echo GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'columns' => [
+                [
+                    'attribute' => 'id',
+                    'options' => ['width' => '40px'],
+                    'format' => 'raw',
+                    'value' => function($data) {
+                        return $data->id;
+                    },
+                ],
+                'name',
+                'points',
+                'description',
+                [
+                    'header' => 'Actions',
+                    'class' => 'yii\grid\ActionColumn',
+                    'options' => ['width' => '80px'],
+                    'buttons' => [
+                        'view' => function($url, $model) {
+                            return "";
+                        },
+                        'update' => function($url, $model) {
+                            return Html::a('<i class="fa fa-pencil"></i>', Url::toRoute(['edit', 'id' => $model->id]), ['class' => 'btn btn-primary btn-xs tt']);
+                        },
+                        'delete' => function($url, $model) {
+                            return Html::a('<i class="fa fa-times"></i>', Url::toRoute(['delete', 'id' => $model->id]), ['class' => 'btn btn-danger btn-xs tt']);
+                        }
+                    ],
+                ],
+            ],
+        ]);
+        
+        /*$dataProvider = new ActiveDataProvider([
+            'query' => $model,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+
+        echo GridView::widget([
+            'dataProvider' => $dataProvider,
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
+                // Simple columns defined by the data contained in $dataProvider.
+                // Data from the model's column will be used.
+                'name',
+                'points',
+                // More complex one.
+                [
+                    'class' => 'yii\grid\DataColumn', // can be omitted, as it is the default
+                    'value' => function ($data) {
+                        return $data->name; // $data['name'] for array data, e.g. using SqlDataProvider.
+                    },
+                ],
+            ],
+        ]);*/
+
+        /*$this->widget('zii.widgets.grid.CGridView', array(
             'id' => 'user-grid',
             'dataProvider' => $model->resetScope()->search(),
             'itemsCssClass' => 'table table-hover',
@@ -97,7 +165,7 @@
                 'htmlOptions' => array('class' => 'pagination'),
             ),
             'pagerCssClass' => 'pagination-container',
-        ));
+        ));*/
         ?>
 
     </div>

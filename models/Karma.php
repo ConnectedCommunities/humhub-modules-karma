@@ -18,6 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace humhub\modules\karma\models;
+
+use Yii;
+use yii\base\Model;
+use yii\data\ActiveDataProvider;
+use humhub\components\ActiveRecord;
+
+
 /**
  * This is the model class for table "karma".
  *
@@ -27,12 +35,12 @@
  * @property integer $points
  * @property string $description
  */
-class Karma extends HActiveRecord
+class Karma extends ActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
+	public static function tableName()
 	{
 		return 'karma';
 	}
@@ -45,13 +53,11 @@ class Karma extends HActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name, points', 'required'),
-			array('points', 'numerical', 'integerOnly'=>true),
-			array('name', 'length', 'max'=>100),
+			array(['name', 'points'], 'required'),
+			array(['points'], 'integer'),
+			array(['name'], 'string', 'max' => 100),
 			array('description', 'safe'),
-			// The following rule is used by search().
-			// @todo Please remove those attributes that should not be searched.
-			array('id, name, points, description', 'safe', 'on'=>'search'),
+			array(['description'], 'safe'),
 		);
 	}
 
@@ -79,46 +85,6 @@ class Karma extends HActiveRecord
 		);
 	}
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 *
-	 * Typical usecase:
-	 * - Initialize the model fields with values from filter form.
-	 * - Execute this method to get CActiveDataProvider instance which will filter
-	 * models according to data in model fields.
-	 * - Pass data provider to CGridView, CListView or any similar widget.
-	 *
-	 * @return CActiveDataProvider the data provider that can return the models
-	 * based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		// @todo Please modify the following code to remove attributes that should not be searched.
-
-		$criteria=new CDbCriteria;
-
-		$criteria->compare('id',$this->id);
-		$criteria->compare('name',$this->name,true);
-		$criteria->compare('points',$this->points);
-		$criteria->compare('description',$this->description,true);
-
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
-	}
-
-	/**
-	 * Returns the static model of the specified AR class.
-	 * Please note that you should have this exact method in all your CActiveRecord descendants!
-	 * @param string $className active record class name.
-	 * @return Karma the static model class
-	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
-
-
     /** 
      * Private method that handles assinging
      * karma to a user
@@ -129,10 +95,10 @@ class Karma extends HActiveRecord
     public function addKarma($karma_name, $user_id) {
 
         // First find the karma record
-        $karma = Karma::model()->findByAttributes(array('name' => $karma_name));
+		$karma = Karma::findOne(['name' => $karma_name]);
 
-        if($karma) {
-	        KarmaUser::model()->attachKarma($user_id, $karma->id);
+		if($karma) {
+	        KarmaUser::attachKarma($user_id, $karma->id);
 	        return true;
         } else {
             return false;

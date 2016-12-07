@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Connected Communities Initiative
  * Copyright (C) 2016 Queensland University of Technology
@@ -16,19 +17,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-?><div class="panel panel-default">
+
+use yii\helpers\Url;
+?>
+<div class="panel panel-default">
     <div class="panel-heading"><strong>Add</strong> Karma</div>
     <div class="panel-body">
         <ul class="nav nav-pills">
             <li><a
-                    href="<?php echo $this->createUrl('index'); ?>"><?php echo Yii::t('AdminModule.views_user_index', 'Overview'); ?></a>
+                    href="<?php echo Url::toRoute('index'); ?>">Overview</a>
             </li>
             <li class="active">
-                <a href="<?php echo $this->createUrl('add'); ?>">Add Karma Record</a>
+                <a href="<?php echo Url::toRoute('add'); ?>">Add Karma Record</a>
             </li>
         </ul>
-        <p />
-        <?php echo $form; ?>
-
+        <?php $form = \yii\widgets\ActiveForm::begin(); ?>
+        <?php echo $hForm->render($form); ?>
+        <?php \yii\widgets\ActiveForm::end(); ?>
     </div>
 </div>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Connected Communities Initiative
  * Copyright (C) 2016 Queensland University of Technology
@@ -16,16 +17,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-class KarmaModule extends HWebModule{
-    
-    /**
-     * Inits the Module
-     */
-    public function init()
-    {
 
-        $this->setImport(array(
-            'karma.models.*',
-        ));
-    }
-}
+use humhub\modules\admin\widgets\AdminMenu;
+use humhub\modules\user\widgets\ProfileMenu;
+
+return [
+    'id' => 'karma',
+    'class' => 'humhub\modules\karma\Module',
+    'namespace' => 'humhub\modules\karma',
+    'events' => [
+		['class' => AdminMenu::className(), 'event' => AdminMenu::EVENT_INIT, 'callback' => ['humhub\modules\karma\Events', 'onAdminMenuInit']],
+		['class' => ProfileMenu::className(), 'event' => ProfileMenu::EVENT_INIT, 'callback' => ['humhub\modules\karma\Events', 'onProfileMenuWidgetInit']],
+    ],
+];
+?>

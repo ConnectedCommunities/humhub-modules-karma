@@ -18,16 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class KarmaEvents{
-    
-    public static function onTopMenuInit($event){
-        $event->sender->addItem(array(
-            'label' => 'Karma',
-            'url' => Yii::app()->createUrl('/karma/main/index', array()),
-            'icon' => '<i class="fa fa-trophy"></i>',
-            'isActive' => (Yii::app()->controller->module && Yii::app()->controller->module->id == 'karma'),
-        ));
-    }
+
+namespace humhub\modules\karma;
+
+use Yii;
+use yii\helpers\Url;
+
+class Events extends \yii\base\Object
+{
+
 
     /**
      * Defines what to do if admin menu is initialized.
@@ -38,14 +37,13 @@ class KarmaEvents{
     {
         $event->sender->addItem(array(
             'label' => Yii::t('KarmaModule.base', 'Karma'),
-            'url' => Yii::app()->createUrl('//karma/admin'),
+            'url' => Url::to(['/karma/admin']),
             'group' => 'manage',
             'icon' => '<i class="fa fa-trophy"></i>',
-            'isActive' => (Yii::app()->controller->module && Yii::app()->controller->module->id == 'karma' && Yii::app()->controller->id == 'admin'),
+            'isActive' => (Yii::$app->controller->module && Yii::$app->controller->module->id == 'karma' && Yii::$app->controller->id == 'admin'),
             'sortOrder' => 510,
         ));
     }
-
 
     /** 
      * Add the Karma menu to the user
@@ -59,7 +57,7 @@ class KarmaEvents{
             'group' => 'profile',
             'url' => $event->sender->user->createUrl('//karma/profile/view'),
             'sortOrder' => 400,
-            'isActive' => (Yii::app()->controller->module->id == "karma" && Yii::app()->controller->id == "profile" && Yii::app()->controller->action->id == "view"),
+            'isActive' => (Yii::$app->controller->module->id == "karma" && Yii::$app->controller->id == "profile" && Yii::$app->controller->action->id == "view"),
         ));
     }
 

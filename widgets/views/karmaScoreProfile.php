@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Connected Communities Initiative
  * Copyright (C) 2016 Queensland University of Technology
@@ -16,8 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+use humhub\modules\karma\models\KarmaUser;
 ?>
 <div class="pull-left entry">
-    <span class="count"><?php echo KarmaUser::model()->score($user->id); ?></span><br>
+    <span class="count"><?php echo KarmaUser::score($user->id); ?></span><br>
     <span class="title">Karma Score</span>
 </div>

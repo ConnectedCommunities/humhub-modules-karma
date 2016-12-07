@@ -18,6 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace humhub\modules\karma\models;
+
+use humhub\modules\user\models\User;
+use humhub\modules\karma\models\Karma;
+use Yii;
+use yii\base\Model;
+use yii\data\ActiveDataProvider;
+use humhub\components\ActiveRecord;
+
+
+
 /**
  * This is the model class for table "karma_user".
  *
@@ -28,12 +39,12 @@
  * @property string $created_at
  * @property string $updated_at
  */
-class KarmaUser extends HActiveRecord
+class KarmaUser extends ActiveRecord
 {
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
+    public static function tableName()
 	{
 		return 'karma_user';
 	}
@@ -43,30 +54,23 @@ class KarmaUser extends HActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
-			array('user_id, karma_id', 'required'),
-			array('user_id, karma_id', 'numerical', 'integerOnly'=>true),
-			array('created_at, updated_at', 'safe'),
-			// The following rule is used by search().
-			// @todo Please remove those attributes that should not be searched.
-			array('id, user_id, karma_id, created_at, updated_at', 'safe', 'on'=>'search'),
+			array(['user_id', 'karma_id'], 'required'),
+			array(['user_id', 'karma_id'], 'integer'),
+			array(['created_at', 'updated_at'], 'safe'),
 		);
 	}
 
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations()
-	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-            'user' => array(static::BELONGS_TO, 'User', 'user_id'),
-            'karma' => array(static::BELONGS_TO, 'Karma', 'karma_id'),
-		);
-	}
+
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+    public function getKarma()
+    {
+        return $this->hasOne(Karma::className(), ['id' => 'karma_id']);
+    }
 
 	/**
 	 * @return array customized attribute labels (name=>label)
@@ -82,34 +86,6 @@ class KarmaUser extends HActiveRecord
 		);
 	}
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 *
-	 * Typical usecase:
-	 * - Initialize the model fields with values from filter form.
-	 * - Execute this method to get CActiveDataProvider instance which will filter
-	 * models according to data in model fields.
-	 * - Pass data provider to CGridView, CListView or any similar widget.
-	 *
-	 * @return CActiveDataProvider the data provider that can return the models
-	 * based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		// @todo Please modify the following code to remove attributes that should not be searched.
-
-		$criteria=new CDbCriteria;
-
-		$criteria->compare('id',$this->id);
-		$criteria->compare('user_id',$this->user_id);
-		$criteria->compare('karma_id',$this->karma_id);
-		$criteria->compare('created_at',$this->created_at,true);
-		$criteria->compare('updated_at',$this->updated_at,true);
-
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
-	}
 
 	/** 
 	 * Filters results by the question_id
@@ -128,26 +104,15 @@ class KarmaUser extends HActiveRecord
 	/**
 	 * Calculate the user's karma score
 	 */
-	public function score($user_id) {
+	public static function score($user_id) {
 
 		// Calculate the "score" (up votes minus down votes)
 		$sql = "SELECT sum(points) as score FROM karma_user ku, karma k
 					WHERE k.id = ku.karma_id
 					AND user_id = :user_id";
 					
-		return Yii::app()->db->createCommand($sql)->bindValue('user_id', $user_id)->queryScalar();
+		return Yii::$app->db->createCommand($sql)->bindValue('user_id', $user_id)->queryScalar();
 
-	}
-
-	/**
-	 * Returns the static model of the specified AR class.
-	 * Please note that you should have this exact method in all your CActiveRecord descendants!
-	 * @param string $className active record class name.
-	 * @return KarmaUser the static model class
-	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
 	}
 
 
@@ -155,8 +120,9 @@ class KarmaUser extends HActiveRecord
 	 * Attaches karam to a user
 	 * @param int $user_id
 	 * @param int $karma_id
+	 * @return bool
 	 */
-	public function attachKarma($user_id, $karma_id) 
+	public static function attachKarma($user_id, $karma_id)
 	{
 		$karma = new KarmaUser;
 		$karma->user_id = $user_id;
