@@ -1,0 +1,13 @@
+{
+    "id": "karma",
+    "name": "Karma",
+    "description": "Award karma to users",
+    "keywords": [
+        "core"
+    ],
+    "version": "1.0",
+    "humhub": {
+        "minVersion": "0.8"
+    },
+    "screenshots": ["assets/screen1.jpg","assets/screen2.jpg"]
+}
