@@ -105,5 +105,18 @@ class Karma extends ActiveRecord
         }
     }
 
+    public static function leaderboard() {
+
+        $sql = "SELECT u.username, SUM(k.points) as points
+                FROM karma_user ku, karma k, user u
+                WHERE ku.karma_id = k.id 
+                AND ku.user_id = u.id
+                GROUP BY ku.user_id
+				ORDER BY points DESC";
+
+        return Yii::$app->db->createCommand($sql)->queryAll();
+
+    }
+
 
 }
