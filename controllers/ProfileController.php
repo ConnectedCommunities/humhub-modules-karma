@@ -39,7 +39,10 @@ class ProfileController extends \humhub\modules\content\components\ContentContai
      */
     public function actionView()
     {
-        $searchModel = new KarmaUserSearch();
+        $searchModel = new KarmaUserSearch([
+            'user_id' => $this->getUser()->id
+        ]);
+
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
 
