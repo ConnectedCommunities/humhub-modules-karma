@@ -57,7 +57,7 @@ class KarmaUser extends ActiveRecord
 		return array(
 			array(['user_id', 'karma_id'], 'required'),
 			array(['user_id', 'karma_id'], 'integer'),
-			array(['created_at', 'updated_at'], 'safe'),
+			array(['created_at', 'updated_at', 'object_model', 'object_id'], 'safe'),
 		);
 	}
 
@@ -122,11 +122,15 @@ class KarmaUser extends ActiveRecord
 	 * @param int $karma_id
 	 * @return bool
 	 */
-	public static function attachKarma($user_id, $karma_id)
+	public static function attachKarma($user_id, $karma_id, $object = null)
 	{
 		$karma = new KarmaUser;
 		$karma->user_id = $user_id;
 		$karma->karma_id = $karma_id;
+        if(!is_null($object) && is_object($object)) {
+            $karma->object_model = get_class($object);
+            $karma->object_id = $object->id;
+        }
 
 		if($karma->validate()) {
 			$karma->save();

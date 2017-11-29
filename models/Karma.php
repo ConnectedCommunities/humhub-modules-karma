@@ -86,23 +86,45 @@ class Karma extends ActiveRecord
 	}
 
     /** 
-     * Private method that handles assinging
-     * karma to a user
+     * Method that handles assigning karma to a user
      * @param string $karma_name
      * @param int $user_id
+     * @param object $object
+     * @param bool $force
      * @return bool
      */
-    public function addKarma($karma_name, $user_id) {
+    public function addKarma($karma_name, $user_id, $object = null, $force = false) {
 
         // First find the karma record
 		$karma = Karma::findOne(['name' => $karma_name]);
 
-		if($karma) {
-	        KarmaUser::attachKarma($user_id, $karma->id);
-	        return true;
-        } else {
-            return false;
+        // Cancel if we can't find the karma record
+        if(!$karma) {
+            return;
         }
+
+        // Prevent users getting karma for themselves unless $force is true
+        if($force == false && Yii::$app->user->id == $user_id) {
+            return;
+        }
+
+        // Prevent repeated karma granting
+        $alreadyGranted = KarmaUser::findOne([
+            'user_id' => $user_id,
+            'karma_id' => $karma->id,
+            'created_by' => Yii::$app->user->id,
+            'object_model' => (!is_null($object) && is_object($object)) ? get_class($object) : null,
+            'object_id' => (!is_null($object) && is_object($object)) ? $object->id : null,
+        ]);
+
+        // Cancel if it's already been granted
+        if($alreadyGranted) {
+            return;
+        }
+
+        // Attach Karma to user if record exists
+        return KarmaUser::attachKarma($user_id, $karma->id, $object);
+
     }
 
     public static function leaderboard() {

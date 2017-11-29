@@ -52,6 +52,17 @@ This is a pretty generic and gives you the ability to pick and choose which even
 
 When `onActiveRecordAfterSave` is fired by the framework, it attaches an `$event` parameter. You can use this to identify what triggered the event to be fired.
 
+```
+/**
+ * Adding Karma to a user account
+ * 
+ * @param  string   $karma_name - Name of Karma record (create via admin panel)
+ * @param  integer  $user_id - ID of user to grant Karma on
+ * @param  object   $object - Object karma granted on (prevents duplicate karma grants). Optional.
+ * @param  bool     $force - Default false. When true allows Karma to be granted to the same user that performed the action.
+ * @return bool
+ */
+```
 In your `Events.php` file
 ```
 public static function onActiveRecordAfterSave($event)
@@ -59,10 +70,11 @@ public static function onActiveRecordAfterSave($event)
     switch(get_class($event->sender)) {
         case Question::className():
             self::onQuestionAfterSave($event);
-            Karma::addKarma('asked_question', $event->sender->user->id);
+            Karma::addKarma('asked_question', $event->sender->user->id, $event->sender, true);
             break;
     }
 }
 ```
 
 Don't forget, you have to define a `asked_question` karma record via the admin panel.
+
