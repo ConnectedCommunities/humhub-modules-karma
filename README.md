@@ -16,8 +16,12 @@ git clone https://github.com/ConnectedCommunities/humhub-modules-karma.git karma
 
 
 ## Usage
-This is the first implementation of the Karma module. 
+> **NOTE:** These instructions are for developers wanting to integrate Karma with their own modules. 
+
+This is the first implementation of the Karma module.
+ 
 Currently, the module is best used as an addition to other modules that wish to implement a karma system. 
+
 That's because you can create Karma events via the admin panel but to implement them you have to code it. 
 It is on the roadmap to make this a full featured karma system out of the box.
 
@@ -78,3 +82,9 @@ public static function onActiveRecordAfterSave($event)
 
 Don't forget, you have to define a `asked_question` karma record via the admin panel.
 
+
+[Example Events.php](https://github.com/ConnectedCommunities/humhub-modules-questionanswer/blob/master/Events.php#L88) 
+
+
+## TODO
+Eventually make it so that people can add karma to any event inside HumHub by defining events to listen for from the admin panel.
