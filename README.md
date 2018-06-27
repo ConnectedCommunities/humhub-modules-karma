@@ -39,22 +39,22 @@ It's recommended that you take advantage of the `Events` HumHub exposes to defin
 
 Use your `config.php` to define when an event should be fired and how it should be handled. 
 
-In the snippet below, we are defining an event that says, after an `ActiveRecord` has been inserted, fire the `onActiveRecordAfterSave` method in our `Events.php` file.
+In the snippet below, we are defining an event that says, after a `Question` has been inserted, fire the `onQuestionAfterSave` method in our `Events.php` file.
 ```
 return [
     // ... 
     'events' => [
         [
-            'class' => \humhub\components\ActiveRecord::className(),
-            'event' => \humhub\components\ActiveRecord::EVENT_AFTER_INSERT,
-            'callback' => ['humhub\modules\questionanswer\Events', 'onActiveRecordAfterSave'],
+            'class' => 'humhub\modules\questionanswer\models\Question',
+            'event' => 'afterInsert',
+            'callback' => ['humhub\modules\questionanswer\Events', 'onQuestionAfterSave'],
         ],
     ]
 ]
 ```
-This is a pretty generic and gives you the ability to pick and choose which events to respond to.
+This is a pretty generic and gives you the ability to pick and choose which events to respond to by simply listening to an event on the model you're interested in.
 
-When `onActiveRecordAfterSave` is fired by the framework, it attaches an `$event` parameter. You can use this to identify what triggered the event to be fired.
+When an event is fired by the framework, it attaches an `$event` parameter. You can use this to identify what triggered the event to be fired.
 
 ```
 /**
@@ -67,20 +67,19 @@ When `onActiveRecordAfterSave` is fired by the framework, it attaches an `$event
  * @return bool
  */
 ```
+
 In your `Events.php` file
 ```
-public static function onActiveRecordAfterSave($event)
+public static function onQuestionAfterSave($event)
 {
-    switch(get_class($event->sender)) {
-        case Question::className():
-            self::onQuestionAfterSave($event);
-            Karma::addKarma('asked_question', $event->sender->user->id, $event->sender, true);
-            break;
+    if(isset(Yii::$app->modules['karma'])) {
+        Karma::addKarma('asked', $event->sender->user->id, $event->sender, true);
     }
 }
+
 ```
 
-Don't forget, you have to define a `asked_question` karma record via the admin panel.
+Don't forget, you have to define a `asked` karma record via the admin panel.
 
 
 [Example Events.php](https://github.com/ConnectedCommunities/humhub-modules-questionanswer/blob/master/Events.php#L88) 
